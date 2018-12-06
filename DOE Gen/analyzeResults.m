@@ -38,6 +38,7 @@ for k = 1:length(dataSorted(:,1))
   end
 end
 
+set(gca, 'FontSize', 12)
 axis([0.5,16.5,0.5,2])
 title('Ordered Data Plot')
 xlabel('Sorded Data Experiment Number')
@@ -46,18 +47,26 @@ disp('The best response is from experiment number: ')
 disp(ind(end))
 
 %% Generate main effects and interaction plots
-figure(2)
+names = {'x-pos', 'y-pos', 'Length', 'Thickness', 'Turn Radius', 'Road Surface'};
+figure(2);
 maineffectsplot(response',levelsMatrix, 'varnames', {'x-pos', 'y-pos', 'Length',...
 'Thickness', 'Turn Radius', 'Road Surface'})
 
+subplot(1,6,1), xlabel('x-pos', 'FontSize', 12), ylabel('mean', 'FontSize', 12)
+for k = 2:length(names)
+    subplot(1,6,k)
+    xlabel(names{k},'FontSize', 12);
+end
+
+
 figure(3)
 interactionplot(response',levelsMatrix, 'varnames', {'x-pos', 'y-pos', 'Length',...
-'Thickness', 'Turn Radius', 'Road Surface'})
+'Thickness', 'Turn Radius', 'Road Surface'});
 
 %% Generate Yuden plot
-factors = {'a', 'b', 'c', 'd', 'e', 'f', 'ab', 'ac', 'ad', 'ae', 'af', 'bc', 'bd',...
-'be', 'bf', 'cd', 'ce', 'cf', 'de', 'df', 'ef'};
-
+% factors = {'a', 'b', 'c', 'd', 'e', 'f', 'ab', 'ac', 'ad', 'ae', 'af', 'bc', 'bd',...
+% 'be', 'bf', 'cd', 'ce', 'cf', 'de', 'df', 'ef'};
+factors = {'a', 'b', 'c', 'd', 'e', 'f'};
 extTable = levelsMatrix;
 for k = 1:length(factors) - 6
   for j = (k+1):6
@@ -65,7 +74,6 @@ for k = 1:length(factors) - 6
     extTable(:,(end+1)) = data(:,k) .* data(:,j);
   end
 end
-disp(extTable)
 
 for k = 1:length(factors)
   lows = extTable(:,k) == -1;
@@ -76,7 +84,15 @@ for k = 1:length(factors)
 
   figure(4), hold on
   plot(neg,pos);
-  text(neg,pos,factors{k})
+  text(neg,pos,factors{k}, 'FontSize', 12)
+  xlabel('Low Level Response', 'FontSize', 12)
+  ylabel('High Level Reponse', 'FontSize', 12)
 end
 
+%% Calculate factor effects
+respMatrix = levelsMatrix .* response';
+contrast = sum(respMatrix);
+n = length(response);
+effect = (2 * contrast) / n;
+disp(effect)
 end
